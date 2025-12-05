@@ -131,8 +131,25 @@ class DQNAgent:
 
     # Placeholder methods - will be implemented in subsequent commits
     def select_action(self, state: np.ndarray, training: bool = True) -> int:
-        """Select action using epsilon-greedy policy."""
-        raise NotImplementedError("To be implemented in next commit")
+        """
+        Select action using epsilon-greedy policy.
+
+        Args:
+            state: Current state
+            training: Whether in training mode (affects exploration)
+
+        Returns:
+            Selected action
+        """
+        if training and np.random.rand() < self.epsilon:
+            # Random action (exploration)
+            return np.random.randint(self.action_dim)
+        else:
+            # Greedy action (exploitation)
+            with torch.no_grad():
+                state_tensor = torch.FloatTensor(state).unsqueeze(0).to(self.device)
+                q_values = self.policy_net(state_tensor)
+                return q_values.argmax().item()
 
     def update(self, batch: Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]) -> float:
         """
@@ -184,9 +201,51 @@ class DQNAgent:
         return loss.item()
 
     def save(self, path: str) -> None:
-        """Save model state."""
-        raise NotImplementedError("To be implemented in next commit")
+        """
+        Save model state to disk.
+
+        Args:
+            path: Path to save the model
+        """
+        dir_path = os.path.dirname(path)
+        if dir_path:  # Only create directory if path has a directory component
+            os.makedirs(dir_path, exist_ok=True)
+        torch.save({
+            'policy_net': self.policy_net.state_dict(),
+            'target_net': self.target_net.state_dict(),
+            'optimizer': self.optimizer.state_dict(),
+            'epsilon': self.epsilon,
+            'step_count': self.step_count,
+            'config': {
+                'state_dim': self.state_dim,
+                'action_dim': self.action_dim,
+                'gamma': self.gamma,
+                'epsilon_end': self.epsilon_end,
+                'epsilon_decay': self.epsilon_decay,
+                'target_update_freq': self.target_update_freq
+            }
+        }, path)
+        print(f"Model saved to {path}")
 
     def load(self, path: str) -> None:
-        """Load model state."""
-        raise NotImplementedError("To be implemented in next commit")
+        """
+        Load model state from disk.
+
+        Args:
+            path: Path to load the model from
+        """
+        checkpoint = torch.load(path, map_location=self.device)
+        self.policy_net.load_state_dict(checkpoint['policy_net'])
+        self.target_net.load_state_dict(checkpoint['target_net'])
+        self.optimizer.load_state_dict(checkpoint['optimizer'])
+        self.epsilon = checkpoint['epsilon']
+        self.step_count = checkpoint['step_count']
+        print(f"Model loaded from {path}")
+
+    def get_epsilon(self) -> float:
+        """Get current epsilon value."""
+        return self.epsilon
+
+    def set_epsilon(self, epsilon: float) -> None:
+        """Set epsilon value (useful for evaluation)."""
+        self.epsilon = epsilon

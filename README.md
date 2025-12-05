@@ -2,7 +2,25 @@
 
 ## Overview
 
-This project implements a comprehensive Reinforcement Learning (RL) system focused on solving the Lunar Lander environment using Deep Q-Networks (DQN) and other advanced techniques. The project explores various RL algorithms, curriculum learning, and reward shaping strategies to achieve optimal performance on the LunarLander-v2 environment.
+This project extends our study of reinforcement learning to the LunarLander-v2 environment, implementing advanced RL techniques following the CS 4320 final project requirements. The project applies RL methods to a moderately complex environment and investigates techniques for scaling RL and improving learning efficiency.
+
+### Project Requirements (CS 4320)
+**Mandatory Techniques:**
+- **Function Approximation**: Non-tabular methods using neural networks for value function representation
+- **Experience Replay Buffer**: Implementation of experience replay for more efficient learning
+
+**Additional Variations (at least 2):**
+- Different learning updates (Proximal Policy Optimization)
+- Reward shaping methods
+- Curriculum learning strategies
+- Advanced exploration techniques
+
+**Deliverables:**
+- **Initial Report** (1-2 pages): Team members, environment selection, techniques plan, anticipated issues
+- **Final Report** (5-10 pages + source code): Overview, methods, results, analysis, and source code
+
+### Current Status
+**Phase 1 (Foundation) is complete** - Project structure, dependencies, replay buffer, and environment verification are all implemented and tested. The team is now executing a revised 3-part work division plan optimized for parallel development across 3 team members.
 
 ## Project Structure
 
@@ -22,19 +40,18 @@ This project implements a comprehensive Reinforcement Learning (RL) system focus
 
 ## Features
 
-### Core Components
-- **Replay Buffer**: Efficient cyclic buffer storing 50,000 transitions with uniform batch sampling (128 experiences)
-- **Environment Verification**: Automated testing of LunarLander-v3 rendering and CartPole smoke tests
-- **Modular Architecture**: Clean separation of agents, environments, and utilities
+### Mandatory Requirements (CS 4320)
+- **Function Approximation**: Neural network-based value function representation (DQN implementation)
+- **Experience Replay Buffer**: Cyclic buffer storing 50,000 transitions with uniform batch sampling (128 experiences)
+- **Environment Verification**: Automated testing of LunarLander-v2 rendering and CartPole smoke tests
 
-### Planned Techniques
+### Additional Techniques (Minimum 2 Required)
 - **Deep Q-Network (DQN)**: MLP-based function approximation with target networks
 - **Proximal Policy Optimization (PPO)**: Alternative policy-gradient baseline
-- **Advanced Features**:
-  - Prioritized Experience Replay
-  - Curriculum Learning
-  - Reward Shaping
-  - Exploration strategies (ε-greedy, entropy bonuses)
+- **Reward Shaping**: Vertical velocity damping, landing gear contact bonuses
+- **Curriculum Learning**: Progressive difficulty increase based on performance
+- **Advanced Exploration**: Epsilon-greedy decay, entropy bonuses, parameter noise
+- **Prioritized Experience Replay**: Importance-weighted sampling for improved learning efficiency
 
 ## Installation
 
@@ -59,12 +76,30 @@ pip install -r requirements.txt
 python verify_environments.py
 ```
 
+## Project Deliverables
+
+### Initial Report (Due: November 15)
+- **Length**: 1-2 pages
+- **Content**: Team members and responsibilities, environment selection, techniques plan, anticipated issues
+- **File**: `initial_report.md` (already drafted)
+
+### Final Report (Due: December 8)
+- **Length**: 5-10 pages plus source code
+- **Content**:
+  - Project overview and motivation
+  - Team member contributions
+  - Environment description
+  - Methods implemented (with focus on mandatory techniques)
+  - Individual method evaluation results
+  - Analysis and discussion of findings
+- **Files**: Report document and complete source code in `reports/`
+
 ### Dependencies
-- `gymnasium[box2d]==0.29.1` - LunarLander environment
-- `torch==2.3.0` - PyTorch for neural networks
+- `gymnasium[box2d]==0.29.1` - LunarLander-v2 environment
+- `torch>=2.6.0` - PyTorch for neural networks (function approximation)
 - `numpy>=1.24.0` - Numerical computations
 - `tqdm>=4.65.0` - Progress bars
-- `tensorboard>=2.15.0` - Experiment tracking
+- `tensorboard>=2.15.0` - Experiment tracking and logging
 
 ## Usage
 
@@ -75,7 +110,7 @@ python verify_environments.py
 ```
 This will check:
 - CartPole environment functionality
-- LunarLander-v3 rendering capabilities
+- LunarLander-v2 rendering capabilities
 - Basic environment API compatibility
 
 ### Training an Agent
@@ -129,35 +164,66 @@ Experiments are organized in the `experiments/` directory with:
 
 ## Development Roadmap
 
-### Phase 1: Foundation (Current)
+### Phase 1: Foundation (Complete)
 - [x] Project structure setup
 - [x] Dependencies configuration
 - [x] Replay buffer implementation
 - [x] Environment verification
 
-### Phase 2: Core Implementation
-- [ ] DQN agent implementation
-- [ ] Training pipeline
-- [ ] Basic evaluation framework
-- [ ] Reproduce baseline performance
+### Phase 2: Core Implementation (In Progress - Revised Plan)
+Following the revised 3-person work division:
 
-### Phase 3: Advanced Features
-- [ ] PPO implementation
-- [ ] Prioritized replay buffer
-- [ ] Curriculum learning
-- [ ] Reward shaping experiments
+#### Part 1: DQN Agent + Environment Wrappers (Person A - Primary Contact)
+- [ ] DQN agent implementation (8→256→256→4, Xavier init, target networks)
+- [ ] Environment wrappers (reward shaping, curriculum learning)
+- [ ] Agent testing and validation
 
-### Phase 4: Analysis & Optimization
-- [ ] Hyperparameter sweeps
-- [ ] Ablation studies
-- [ ] Performance analysis
-- [ ] Final report preparation
+#### Part 2: Training Pipeline + Evaluation Framework (Person B - Evaluation Lead)
+- [ ] Training orchestrator with multi-seed support
+- [ ] Configuration management (YAML-based)
+- [ ] Evaluation framework with TensorBoard logging
+- [ ] Baseline performance reproduction (target: ~200 reward)
+
+#### Part 3: Advanced Features (Person C - Exploration Lead)
+- [ ] PPO agent implementation
+- [ ] Prioritized experience replay
+- [ ] Curriculum learning system
+- [ ] Advanced exploration strategies
+
+### Phase 3: Analysis & Optimization (Planned)
+- [ ] Hyperparameter sweeps across configurations
+- [ ] Ablation studies comparing techniques
+- [ ] Performance analysis and visualization
+- [ ] Final report preparation and presentation
 
 ## Team & Responsibilities
 
-- **Primary Contact**: Environment setup, RL implementation, experiment automation, repository maintenance
-- **Evaluation Lead**: Experimental design, hyperparameter sweeps, result aggregation, quantitative analysis
-- **Exploration Lead**: Advanced techniques (PPO variants, visualization, curriculum learning), documentation, presentation
+### Work Division (Revised 3-Part Plan)
+
+- **Person A (Primary Contact)**: *Part 1 - DQN Agent + Environment Wrappers*
+  - DQN agent implementation with correct architecture (8→256→256→4 MLP)
+  - Environment wrappers (reward shaping, curriculum learning)
+  - Agent testing, validation, and repository maintenance
+  - *Timeline*: Weeks 1-2 | *Deliverables*: Working DQN agent, environment wrappers
+
+- **Person B (Evaluation Lead)**: *Part 2 - Training Pipeline + Evaluation Framework*
+  - Training orchestrator supporting 500-1000 episodes across 3 seeds
+  - YAML configuration system for hyperparameters
+  - TensorBoard logging and evaluation metrics framework
+  - Baseline performance reproduction (target: ~200 reward)
+  - *Timeline*: Weeks 2-3 | *Deliverables*: Training scripts, evaluation framework, baseline results
+
+- **Person C (Exploration Lead)**: *Part 3 - Advanced Features*
+  - PPO agent implementation with actor-critic architecture
+  - Prioritized experience replay and advanced exploration
+  - Curriculum learning system and experimental variants
+  - Documentation, visualization, and presentation preparation
+  - *Timeline*: Weeks 3-4 | *Deliverables*: Advanced agents, curriculum system, experimental comparisons
+
+### Integration Points
+- **Weekly Check-ins**: Code reviews and integration testing
+- **Shared Testing**: Common test suite ensures compatibility
+- **Documentation**: Each component includes usage examples and hyperparameter justifications
 
 ## Technical Details
 

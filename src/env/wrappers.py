@@ -171,6 +171,7 @@ class CurriculumWrapper(BaseWrapper):
         self.current_phase = 0
         self.episode_rewards = []
         self.phase_start_episode = 0
+        self.episode_reward_accumulator = 0.0  # Track cumulative episode reward
 
         # Store original environment parameters
         self.original_gravity = getattr(env, 'gravity', 9.8)
@@ -179,6 +180,9 @@ class CurriculumWrapper(BaseWrapper):
     def reset(self, **kwargs):
         """Reset and potentially update environment difficulty."""
         result = super().reset(**kwargs)
+
+        # Reset episode reward accumulator for new episode
+        self.episode_reward_accumulator = 0.0
 
         # Update environment parameters based on current phase
         self._update_environment_parameters()
@@ -189,9 +193,13 @@ class CurriculumWrapper(BaseWrapper):
         """Execute action and track performance for curriculum."""
         state, reward, terminated, truncated, info = super().step(action)
 
-        # Track episode rewards
+        # Accumulate reward throughout the episode
+        self.episode_reward_accumulator += reward
+
+        # Track episode rewards only when episode ends
         if terminated or truncated:
-            self.episode_rewards.append(reward)
+            # Store the cumulative episode reward, not just the final step reward
+            self.episode_rewards.append(self.episode_reward_accumulator)
 
             # Check if we should advance to next phase
             if self._should_advance_phase():

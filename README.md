@@ -204,21 +204,18 @@ Following the revised 3-person work division:
   - DQN agent implementation with correct architecture (8→256→256→4 MLP)
   - Environment wrappers (reward shaping, curriculum learning)
   - Agent testing, validation, and repository maintenance
-  - *Timeline*: Weeks 1-2 | *Deliverables*: Working DQN agent, environment wrappers
 
 - **Person B (Evaluation Lead)**: *Part 2 - Training Pipeline + Evaluation Framework*
   - Training orchestrator supporting 500-1000 episodes across 3 seeds
   - YAML configuration system for hyperparameters
   - TensorBoard logging and evaluation metrics framework
   - Baseline performance reproduction (target: ~200 reward)
-  - *Timeline*: Weeks 2-3 | *Deliverables*: Training scripts, evaluation framework, baseline results
-
+  
 - **Person C (Exploration Lead)**: *Part 3 - Advanced Features*
   - PPO agent implementation with actor-critic architecture
   - Prioritized experience replay and advanced exploration
   - Curriculum learning system and experimental variants
   - Documentation, visualization, and presentation preparation
-  - *Timeline*: Weeks 3-4 | *Deliverables*: Advanced agents, curriculum system, experimental comparisons
 
 ### Integration Points
 - **Weekly Check-ins**: Code reviews and integration testing

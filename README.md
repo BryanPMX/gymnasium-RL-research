@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project implements a comprehensive Reinforcement Learning (RL) system focused on solving the Lunar Lander environment using Deep Q-Networks (DQN) and other advanced techniques. The project explores various RL algorithms, curriculum learning, and reward shaping strategies to achieve optimal performance on the LunarLander-v3 environment.
+This project implements a comprehensive Reinforcement Learning (RL) system focused on solving the Lunar Lander environment using Deep Q-Networks (DQN) and other advanced techniques. The project explores various RL algorithms, curriculum learning, and reward shaping strategies to achieve optimal performance on the LunarLander-v2 environment.
 
 ## Project Structure
 
@@ -162,7 +162,7 @@ Experiments are organized in the `experiments/` directory with:
 ## Technical Details
 
 ### Environment
-- **Task**: LunarLander-v3 (continuous state, discrete action)
+- **Task**: LunarLander-v2 (continuous state, discrete action)
 - **State Space**: 8-dimensional continuous features
 - **Action Space**: 4 discrete actions
 - **Reward Structure**: Complex landing mechanics with fuel penalties

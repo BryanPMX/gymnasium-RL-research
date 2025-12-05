@@ -124,14 +124,64 @@ class DQNAgent:
         print(f"Policy network: {self.policy_net}")
         print(f"Target network: {self.target_net}")
 
+    def update_target_network(self):
+        """Update target network with policy network weights."""
+        self.target_net.load_state_dict(self.policy_net.state_dict())
+        print(f"Target network updated at step {self.step_count}")
+
     # Placeholder methods - will be implemented in subsequent commits
     def select_action(self, state: np.ndarray, training: bool = True) -> int:
         """Select action using epsilon-greedy policy."""
         raise NotImplementedError("To be implemented in next commit")
 
-    def update(self, batch: Tuple[np.ndarray, ...]) -> float:
-        """Update the policy network using a batch of experiences."""
-        raise NotImplementedError("To be implemented in next commit")
+    def update(self, batch: Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]) -> float:
+        """
+        Update the policy network using a batch of experiences.
+
+        Args:
+            batch: Tuple of (states, actions, rewards, next_states, dones)
+
+        Returns:
+            Loss value
+        """
+        states, actions, rewards, next_states, dones = batch
+
+        # Convert to tensors
+        states = torch.FloatTensor(states).to(self.device)
+        actions = torch.LongTensor(actions).unsqueeze(1).to(self.device)
+        rewards = torch.FloatTensor(rewards).unsqueeze(1).to(self.device)
+        next_states = torch.FloatTensor(next_states).to(self.device)
+        dones = torch.FloatTensor(dones).unsqueeze(1).to(self.device)
+
+        # Current Q values
+        current_q = self.policy_net(states).gather(1, actions)
+
+        # Target Q values using target network
+        with torch.no_grad():
+            next_q = self.target_net(next_states).max(1)[0].unsqueeze(1)
+            target_q = rewards + (1 - dones) * self.gamma * next_q
+
+        # Compute loss
+        loss = F.huber_loss(current_q, target_q)
+
+        # Optimize
+        self.optimizer.zero_grad()
+        loss.backward()
+
+        # Gradient clipping for stability
+        torch.nn.utils.clip_grad_norm_(self.policy_net.parameters(), max_norm=5.0)
+
+        self.optimizer.step()
+
+        # Update target network
+        self.step_count += 1
+        if self.step_count % self.target_update_freq == 0:
+            self.update_target_network()
+
+        # Decay epsilon
+        self.epsilon = max(self.epsilon_end, self.epsilon * self.epsilon_decay)
+
+        return loss.item()
 
     def save(self, path: str) -> None:
         """Save model state."""

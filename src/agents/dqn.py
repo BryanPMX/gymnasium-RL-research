@@ -111,12 +111,18 @@ class DQNAgent:
         else:
             self.device = torch.device(device)
 
-        # Placeholder for networks - will be implemented next
-        self.policy_net = None
-        self.target_net = None
-        self.optimizer = None
+        # Initialize Q-networks
+        self.policy_net = QNetwork(state_dim, action_dim, hidden_dim).to(self.device)
+        self.target_net = QNetwork(state_dim, action_dim, hidden_dim).to(self.device)
+        self.target_net.load_state_dict(self.policy_net.state_dict())
+        self.target_net.eval()  # Target network in eval mode
+
+        # Initialize optimizer
+        self.optimizer = optim.Adam(self.policy_net.parameters(), lr=lr)
 
         print(f"DQN Agent initialized on device: {self.device}")
+        print(f"Policy network: {self.policy_net}")
+        print(f"Target network: {self.target_net}")
 
     # Placeholder methods - will be implemented in subsequent commits
     def select_action(self, state: np.ndarray, training: bool = True) -> int:

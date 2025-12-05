@@ -190,7 +190,7 @@ Following the revised 3-person work division:
 - [ ] Curriculum learning system
 - [ ] Advanced exploration strategies
 
-### Phase 3: Analysis & Optimization (Planned)
+### Phase 3: Analysis & Optimization ()
 - [ ] Hyperparameter sweeps across configurations
 - [ ] Ablation studies comparing techniques
 - [ ] Performance analysis and visualization
@@ -200,7 +200,7 @@ Following the revised 3-person work division:
 
 ### Work Division (Revised 3-Part Plan)
 
-- **Person A (Primary Contact)**: *Part 1 - DQN Agent + Environment Wrappers*
+- **Bryan Perez (Person A)**: *Part 1 - DQN Agent + Environment Wrappers*
   - DQN agent implementation with correct architecture (8→256→256→4 MLP)
   - Environment wrappers (reward shaping, curriculum learning)
   - Agent testing, validation, and repository maintenance
@@ -210,7 +210,7 @@ Following the revised 3-person work division:
   - YAML configuration system for hyperparameters
   - TensorBoard logging and evaluation metrics framework
   - Baseline performance reproduction (target: ~200 reward)
-  
+
 - **Person C (Exploration Lead)**: *Part 3 - Advanced Features*
   - PPO agent implementation with actor-critic architecture
   - Prioritized experience replay and advanced exploration

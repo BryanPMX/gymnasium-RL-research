@@ -1,0 +1,27 @@
+experiment_name: "ppo_baseline"
+env_id: "LunarLander-v2"
+
+seeds: [0]
+
+training:
+  episodes: 500
+  max_steps_per_episode: 1000
+
+  # PPO hyperparams
+  learning_rate: 0.0003
+  gamma: 0.99
+  clip_epsilon: 0.2
+  value_coef: 0.5
+  entropy_coef: 0.01
+  update_epochs: 10
+  batch_size: 64
+
+  # Wrappers / curriculum
+  use_reward_shaping: true
+  use_curriculum: true
+
+  # Logging / eval
+  log_interval: 10
+  eval_interval: 50
+  eval_episodes: 10
+  moving_avg_window: 50

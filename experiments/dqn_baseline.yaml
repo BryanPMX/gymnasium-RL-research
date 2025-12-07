@@ -22,7 +22,7 @@ training:
 
   # target network + optimization
   target_update_freq: 1000   # in steps
-  learning_rate: 0.0003      # matches README 3e-4
+  learning_rate: 0.0003
   gradient_clip_norm: 5.0
 
   # logging & eval
@@ -31,3 +31,8 @@ training:
   eval_episodes: 10
   moving_avg_window: 100
   checkpoint_interval: 100   # save checkpoint every N episodes
+
+  use_per: true           # or false for vanilla replay
+  per_alpha: 0.6
+  per_beta_start: 0.4
+  per_beta_frames: 100000

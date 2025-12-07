@@ -199,7 +199,69 @@ class DQNAgent:
         self.epsilon = max(self.epsilon_end, self.epsilon * self.epsilon_decay)
 
         return loss.item()
+     
+    def update_per(
+        self,
+        batch: Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray],
+        weights: np.ndarray
+    ) -> Tuple[float, np.ndarray]:
+        """
+        Update the policy network using a batch from Prioritized Replay.
 
+        This is like `update`, but:
+        - weights are applied to each sample's loss
+        - TD errors are returned so buffer priorities can be updated
+
+        Args:
+            batch: (states, actions, rewards, next_states, dones)
+            weights: importance-sampling weights (shape: [batch_size])
+
+        Returns:
+            loss_value: scalar loss
+            td_errors: numpy array of TD errors for each transition
+        """
+        states, actions, rewards, next_states, dones = batch
+
+        states = torch.FloatTensor(states).to(self.device)
+        actions = torch.LongTensor(actions).unsqueeze(1).to(self.device)
+        rewards = torch.FloatTensor(rewards).unsqueeze(1).to(self.device)
+        next_states = torch.FloatTensor(next_states).to(self.device)
+        dones = torch.FloatTensor(dones).unsqueeze(1).to(self.device)
+        w = torch.FloatTensor(weights).unsqueeze(1).to(self.device)
+
+        # Q(s, a)
+        current_q = self.policy_net(states).gather(1, actions)
+
+        # target Q
+        with torch.no_grad():
+            next_q = self.target_net(next_states).max(1)[0].unsqueeze(1)
+            target_q = rewards + (1 - dones) * self.gamma * next_q
+
+        # element-wise Huber loss (no reduction)
+        td_errors = target_q - current_q  # sign matters only for priority
+        element_loss = F.huber_loss(current_q, target_q, reduction="none")
+
+        # apply importance-sampling weights
+        loss = (element_loss * w).mean()
+
+        # optimize
+        self.optimizer.zero_grad()
+        loss.backward()
+        torch.nn.utils.clip_grad_norm_(self.policy_net.parameters(), max_norm=5.0)
+        self.optimizer.step()
+
+        # target net update
+        self.step_count += 1
+        if self.step_count % self.target_update_freq == 0:
+            self.update_target_network()
+
+        # epsilon decay
+        self.epsilon = max(self.epsilon_end, self.epsilon * self.epsilon_decay)
+
+        # return scalar loss + TD errors (as numpy, 1D)
+        return loss.item(), td_errors.detach().cpu().numpy().squeeze()
+
+     
     def save(self, path: str) -> None:
         """
         Save model state to disk.

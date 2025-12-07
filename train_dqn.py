@@ -12,6 +12,7 @@ from torch.utils.tensorboard import SummaryWriter
 import yaml
 
 from src.utils.replay_buffer import ReplayBuffer
+from src.utils.prioritized_replay_buffer import PrioritizedReplayBuffer
 from src.agents.dqn import DQNAgent
 
 
@@ -79,11 +80,27 @@ def train_one_seed(config, seed: int, log_dir: str):
     # Checkpoint directory setup
     checkpoint_dir = setup_checkpoint_dir(log_dir, config['experiment_name'], seed)
 
-    # Agent + replay buffer
-    buffer = ReplayBuffer(
-        capacity=train_cfg["replay_capacity"],
-        batch_size=train_cfg["batch_size"],
-    )
+    # ------------------------------------------------------------------
+    # Agent + replay buffer (standard or prioritized)
+    # ------------------------------------------------------------------
+    use_per = train_cfg.get("use_per", False)
+
+    if use_per:
+        buffer = PrioritizedReplayBuffer(
+            capacity=train_cfg["replay_capacity"],
+            batch_size=train_cfg["batch_size"],
+            alpha=train_cfg.get("per_alpha", 0.6),
+            beta_start=train_cfg.get("per_beta_start", 0.4),
+            beta_frames=train_cfg.get("per_beta_frames", 100000),
+        )
+        print("[DQN] Using Prioritized Experience Replay")
+    else:
+        buffer = ReplayBuffer(
+            capacity=train_cfg["replay_capacity"],
+            batch_size=train_cfg["batch_size"],
+        )
+        print("[DQN] Using standard uniform replay buffer")
+
     agent = DQNAgent(
         state_dim=state_dim,
         action_dim=action_dim,
@@ -137,8 +154,15 @@ def train_one_seed(config, seed: int, log_dir: str):
             # ---- LEARNING STEP ----
             loss = None
             if len(buffer) >= min_buffer_size:
-                batch = buffer.sample()          # (s, a, r, s', done)
-                loss = agent.update(batch)
+                if isinstance(buffer, PrioritizedReplayBuffer):
+                    # PER: sample + update priorities
+                    batch, indices, weights = buffer.sample()
+                    loss, td_errors = agent.update_per(batch, weights)
+                    buffer.update_priorities(indices, td_errors)
+                else:
+                    # Standard uniform replay
+                    batch = buffer.sample()
+                    loss = agent.update(batch)
 
             if loss is not None:
                 writer.add_scalar("train/loss", loss, global_step)

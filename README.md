@@ -173,10 +173,11 @@ Experiments are organized in the `experiments/` directory with:
 ### Phase 2: Core Implementation (In Progress - Revised Plan)
 Following the revised 3-person work division:
 
-#### Part 1: DQN Agent + Environment Wrappers (Person A - Primary Contact)
-- [ ] DQN agent implementation (8→256→256→4, Xavier init, target networks)
-- [ ] Environment wrappers (reward shaping, curriculum learning)
-- [ ] Agent testing and validation
+#### Part 1: DQN Agent + Environment Wrappers (Person A - Primary Contact ✅ Complete)
+- [x] DQN agent implementation (8→256→256→4, Xavier init, target networks)
+- [x] Environment wrappers (reward shaping, curriculum learning)
+- [x] Agent testing and validation
+- [x] Critical curriculum bug fix (episode reward accumulation)
 
 #### Part 2: Training Pipeline + Evaluation Framework (Person B - Evaluation Lead)
 - [ ] Training orchestrator with multi-seed support

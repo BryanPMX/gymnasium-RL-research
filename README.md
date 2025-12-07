@@ -173,10 +173,11 @@ Experiments are organized in the `experiments/` directory with:
 ### Phase 2: Core Implementation (In Progress - Revised Plan)
 Following the revised 3-person work division:
 
-#### Part 1: DQN Agent + Environment Wrappers (Person A)
-- [ ] DQN agent implementation (8→256→256→4, Xavier init, target networks)
-- [ ] Environment wrappers (reward shaping, curriculum learning)
-- [ ] Agent testing and validation
+#### Part 1: DQN Agent + Environment Wrappers (Person A - Primary Contact ✅ Complete)
+- [x] DQN agent implementation (8→256→256→4, Xavier init, target networks)
+- [x] Environment wrappers (reward shaping, curriculum learning)
+- [x] Agent testing and validation
+- [x] Critical curriculum bug fix (episode reward accumulation)
 
 #### Part 2: Training Pipeline + Evaluation Framework (Person B - Evaluation Lead)
 - [ ] Training orchestrator with multi-seed support
@@ -201,20 +202,17 @@ Following the revised 3-person work division:
 ### Work Division (Revised 3-Part Plan)
 
 - **Bryan Perez (Person A)**: *Part 1 - DQN Agent + Environment Wrappers*
-  - **Branch**: `feature/dqn-agent-env-wrappers`
   - DQN agent implementation with correct architecture (8→256→256→4 MLP)
   - Environment wrappers (reward shaping, curriculum learning)
   - Agent testing, validation, and repository maintenance
 
 - **Person B (Evaluation Lead)**: *Part 2 - Training Pipeline + Evaluation Framework*
-  - **Branch**: `feature/training-pipeline`
   - Training orchestrator supporting 500-1000 episodes across 3 seeds
   - YAML configuration system for hyperparameters
   - TensorBoard logging and evaluation metrics framework
   - Baseline performance reproduction (target: ~200 reward)
 
 - **Person C (Exploration Lead)**: *Part 3 - Advanced Features*
-  - **Branch**: `feature/advanced-features`
   - PPO agent implementation with actor-critic architecture
   - Prioritized experience replay and advanced exploration
   - Curriculum learning system and experimental variants
@@ -224,12 +222,6 @@ Following the revised 3-person work division:
 - **Weekly Check-ins**: Code reviews and integration testing
 - **Shared Testing**: Common test suite ensures compatibility
 - **Documentation**: Each component includes usage examples and hyperparameter justifications
-
-### Git Workflow
-- **Main Branch**: `main` - Integration branch (stable, only for merges)
-- **Feature Branches**: Work on assigned feature branch, push regularly
-- **Pull Requests**: Create PR for code review before merging to main
-- **Weekly Merges**: Merge completed work to main for integration testing
 
 ## Technical Details
 

@@ -30,3 +30,4 @@ training:
   eval_interval: 50          # episodes
   eval_episodes: 10
   moving_avg_window: 100
+  checkpoint_interval: 100   # save checkpoint every N episodes

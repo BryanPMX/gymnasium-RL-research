@@ -1,7 +1,9 @@
 import argparse
 import os
 import random
+import csv
 from collections import deque
+from datetime import datetime
 
 import gymnasium as gym
 import numpy as np
@@ -30,6 +32,33 @@ def make_env(env_id: str, seed: int):
     return env
 
 
+def setup_csv_logging(log_dir: str, experiment_name: str, seed: int):
+    """Set up CSV logging for episode metrics."""
+    csv_dir = os.path.join(log_dir, "csv_logs")
+    os.makedirs(csv_dir, exist_ok=True)
+
+    csv_filename = f"{experiment_name}_seed{seed}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+    csv_path = os.path.join(csv_dir, csv_filename)
+
+    csv_file = open(csv_path, 'w', newline='')
+    csv_writer = csv.writer(csv_file)
+
+    # Write header
+    csv_writer.writerow([
+        'episode', 'episode_reward', 'moving_avg_reward', 'epsilon',
+        'steps_in_episode', 'total_steps', 'loss'
+    ])
+
+    return csv_file, csv_writer
+
+
+def setup_checkpoint_dir(log_dir: str, experiment_name: str, seed: int):
+    """Set up directory for model checkpoints."""
+    checkpoint_dir = os.path.join(log_dir, "checkpoints", f"{experiment_name}_seed{seed}")
+    os.makedirs(checkpoint_dir, exist_ok=True)
+    return checkpoint_dir
+
+
 def train_one_seed(config, seed: int, log_dir: str):
     env_id = config["env_id"]
     train_cfg = config["training"]
@@ -43,6 +72,12 @@ def train_one_seed(config, seed: int, log_dir: str):
     # TensorBoard writer for this seed
     run_name = f"{config['experiment_name']}_seed{seed}"
     writer = SummaryWriter(log_dir=os.path.join(log_dir, run_name))
+
+    # CSV logging setup
+    csv_file, csv_writer = setup_csv_logging(log_dir, config['experiment_name'], seed)
+
+    # Checkpoint directory setup
+    checkpoint_dir = setup_checkpoint_dir(log_dir, config['experiment_name'], seed)
 
     # Agent + replay buffer
     buffer = ReplayBuffer(
@@ -69,11 +104,13 @@ def train_one_seed(config, seed: int, log_dir: str):
     eval_episodes = train_cfg["eval_episodes"]
     log_interval = train_cfg["log_interval"]
     ma_window = train_cfg["moving_avg_window"]
+    checkpoint_interval = train_cfg.get("checkpoint_interval", 100)  # Save checkpoint every 100 episodes
 
     episode_rewards = []
     moving_avg_rewards = deque(maxlen=ma_window)
 
     global_step = 0
+    best_reward = float('-inf')
 
     for ep in range(1, episodes + 1):
         state, _ = env.reset(seed=seed)
@@ -120,6 +157,17 @@ def train_one_seed(config, seed: int, log_dir: str):
         writer.add_scalar("train/epsilon", current_eps, ep)
         writer.add_scalar("train/moving_avg_reward", avg_reward, ep)
 
+        # CSV logging
+        csv_writer.writerow([
+            ep,
+            f"{ep_reward:.4f}",
+            f"{avg_reward:.4f}",
+            f"{current_eps:.6f}",
+            t + 1,  # steps_in_episode
+            global_step,
+            f"{loss:.6f}" if loss is not None else ""
+        ])
+
         if ep % log_interval == 0:
             print(
                 f"[Seed {seed}] Episode {ep}/{episodes} | "
@@ -140,8 +188,30 @@ def train_one_seed(config, seed: int, log_dir: str):
                 f"mean={eval_mean:.1f} ± {eval_std:.1f}"
             )
 
+            # Track best reward for checkpointing
+            if eval_mean > best_reward:
+                best_reward = eval_mean
+                # Save best model checkpoint
+                best_checkpoint_path = os.path.join(checkpoint_dir, f"best_model_ep{ep}_reward{eval_mean:.1f}.pth")
+                agent.save(best_checkpoint_path)
+                print(f"[Seed {seed}] >>> Saved best model: {best_checkpoint_path}")
+
+        # Regular checkpointing
+        if ep % checkpoint_interval == 0:
+            checkpoint_path = os.path.join(checkpoint_dir, f"checkpoint_ep{ep}.pth")
+            agent.save(checkpoint_path)
+            print(f"[Seed {seed}] >>> Saved checkpoint: {checkpoint_path}")
+
+    # Final checkpoint
+    final_checkpoint_path = os.path.join(checkpoint_dir, "final_model.pth")
+    agent.save(final_checkpoint_path)
+    print(f"[Seed {seed}] >>> Saved final model: {final_checkpoint_path}")
+
     env.close()
     writer.close()
+    csv_file.close()
+
+    print(f"[Seed {seed}] Training completed. CSV log saved.")
 
 
 def evaluate_policy(env_id: str, agent: DQNAgent, episodes: int, seed: int = 0):

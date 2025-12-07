@@ -1,0 +1,9 @@
+
+# macOS junk
+.DS_Store
+src/.DS_Store
+
+# TensorBoard logs
+runs/
+*.tfevents.*
+

@@ -1,0 +1,32 @@
+# experiments/dqn_baseline.yaml
+
+experiment_name: "dqn_baseline_lunarlander"
+env_id: "LunarLander-v2"
+
+seeds: [0, 1, 2]
+
+training:
+  episodes: 800              # 500–1000 is what your README says
+  max_steps_per_episode: 1000
+  gamma: 0.99
+
+  # epsilon-greedy exploration
+  epsilon_start: 1.0
+  epsilon_end: 0.05
+  epsilon_decay: 0.9995
+
+  # replay buffer
+  replay_capacity: 50000
+  batch_size: 128
+  min_buffer_size: 2000      # don’t update until we have this many transitions
+
+  # target network + optimization
+  target_update_freq: 1000   # in steps
+  learning_rate: 0.0003      # matches README 3e-4
+  gradient_clip_norm: 5.0
+
+  # logging & eval
+  log_interval: 10           # episodes
+  eval_interval: 50          # episodes
+  eval_episodes: 10
+  moving_avg_window: 100

@@ -1,11 +1,11 @@
 # Part 2 Progress Report: Training Pipeline + Evaluation Framework
 
 **Date:** December 7, 2025
-**Author:** Evaluation Lead (Person B)
+**Author:** Ethan Duarte (Person B - Evaluation Lead)
 **Part:** 2 of 3 (Training Pipeline + Evaluation Framework)
 **Status:** Complete and Functional
 
-## Executive Summary
+## Overview
 
 Part 2 of the CS 4320 RL project has been successfully completed with a comprehensive training pipeline that includes multi-seed evaluation, TensorBoard logging, CSV export functionality, and model checkpointing. The implementation enables systematic experimentation with reproducible results, supporting the research requirements for hyperparameter tuning and performance analysis.
 

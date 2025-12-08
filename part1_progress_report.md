@@ -5,7 +5,7 @@
 **Part:** 1 of 3 (DQN Agent + Environment Wrappers)
 **Status:** Complete and Merged to Main
 
-## Executive Summary
+## Overview
 
 Part 1 of the CS 4320 RL project has been successfully completed, delivering a fully functional DQN agent with environment wrappers for enhanced learning. The implementation includes proper reward shaping, curriculum learning, and comprehensive testing. A critical curriculum bug was identified and fixed, ensuring accurate performance evaluation for adaptive difficulty scaling.
 

@@ -1,6 +1,5 @@
 # CS 4320 Final Project: Advanced Reinforcement Learning on Lunar Lander
 
-**Course:** CS 4320 - Machine Learning  
 **Semester:** Fall 2025  
 **Date:** December 8, 2025  
 
@@ -447,7 +446,3 @@ The project provided valuable insights into reinforcement learning implementatio
 ## Acknowledgments
 
 We acknowledge the support and guidance provided by the CS 4320 course staff throughout the project development. Special thanks to OpenAI for the Gymnasium environment framework and the broader reinforcement learning research community for establishing the foundational algorithms implemented in this work.
-
----
-
-**This comprehensive study demonstrates mastery of advanced reinforcement learning techniques and establishes a solid foundation for continued research in the field.**
